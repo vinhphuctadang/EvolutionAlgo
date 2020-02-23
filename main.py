@@ -6,37 +6,32 @@ import random as rd
 # 2 bounds
 A = -10
 B = 10 
+population = 1000
 
 def f (x):
-	return (x-7)*(x+1)*(x+6)#x*x - x*math.sqrt (x*x + x + 1)  - 2 * x - 4;
+	return (x-9)*(x-3)*(x+4)*(x+2) # edit function here!!!
 def environment (x):
 	return abs (f(x))
 
 def mutate (x):
-	return x + rd.random () * 2 - 1;
+	return x + rd.random () * 2 - 1
 	
 def hybird (x, y):
  	# mutate
  	X = mutate (x)
  	Y = mutate (y)
  	# hybirding
- 	return (X+Y) / 2;
-
-def eliminate_criteria (x): # homogeneous
-	if environment (x) >= 3 or x < A or x > B:  
-		return True
-	return False
+	# actually, it needs to be randomly hybirding (bitwise modification for example), but for simplicity, I just need to calculate their average
+ 	return (X+Y) / 2
 
 def ageing (X, death_rate=0.4): #randomizingly chose death
-	tmp = []
-	for x in X:
-		if eliminate_criteria(x):
-			tmp.append (x)
+	envValues = []
+	for i in range(len(X)):
+		envValues.append((environment(X[i]), X[i]))
+	envValues.sort(reverse=True)
 	num_death = int (death_rate * len (X))
-	for _ in range (min (num_death, len (tmp))):
-		x = rd.randrange (0, len(tmp))
-		X.remove (tmp[x])
-		del tmp[x]
+	for _ in range (min (num_death, len (X))):
+		X.remove(envValues[_][1]) # delete index which contains highest environment value (due to this criteria: as low as possible)	
 	print ('%d death' % num_death)
 	return X
 
@@ -60,10 +55,10 @@ def thrive (X, birth_rate=0.5): # arbitrarily random
 
 def init (num=100, a=-10, b=10):
 	X = [(rd.random () * (b-a)+a) for i in range (num)]
-	return X;
+	return X
 
 def line (x):
-	return 0;
+	return 0
 
 def main ():
 
@@ -74,17 +69,20 @@ def main ():
 	plot.canvas ().ion ()
 	plot.canvas ().show ()
 
-	X = init (1000,a=A,b=B)
-
+	X = init (population,a=A,b=B) # random population here!!!
+	generation = 0
 	try:
 		while 1:
-			X = thrive (X) # hybirding performs and returns new generation
-			X = ageing (X)
+			print(f'Generation {generation}')
 			plot.canvas ().clf ()
 			plot.plot_function (line)
 			plot.plot_function (f)
+			plot.plot_points (X, [0 for i in X])
 			plot.plot_points (X, [f(i) for i in X])
 			plot.canvas ().pause (0.5)
+			X = thrive (X, birth_rate=0.4) # hybirding performs and returns new generation
+			X = ageing (X, death_rate=0.3) 
+			generation+=1
 			pass
 	except Exception as e:
 		print (e)
