@@ -5,7 +5,7 @@ import random as rd
 
 # 2 bounds
 A = -10
-B = 10 
+B = -5
 population = 1000
 
 def f (x):
@@ -74,7 +74,7 @@ def main ():
 	try:
 		while 1:
 			print(f'Generation {generation}')
-			plot.canvas ().clf ()
+			plot.canvas().clf ()
 			plot.plot_function (line)
 			plot.plot_function (f)
 			plot.plot_points (X, [0 for i in X])
